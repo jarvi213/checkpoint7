@@ -1,38 +1,78 @@
 'use strict'
 
-function getNPSinfo() {
-    makeAPIRequest();
-    fetch(`https://developer.nps.gov/api/v1/parks?api_key=HrZMcBmPsvZDZygwNjJpwXjtlyeqdP7tbQrhotq8`)
-      .then(response => response.json())
-      .then(responseJson => console.log(responseJson));}
-  
-function getAPIstuff() {
-    const parkName = 
-    const parkDesc =
-    const ParkURL = 
+const searchURL = "https://developer.nps.gov/api/v1/parks"
+const apiKey = "HrZMcBmPsvZDZygwNjJpwXjtlyeqdP7tbQrhotq8"
+
+//listens for user input
+function getParkInfo(){
+    $("#searchButton").on("click", function(){
+        const searchText = $("#stateId").val()
+        const searchNumber = $('#resultsReturn').val()
+        makeAPIRequest(searchText, searchNumber)
+    })
 }
 
-function makeAPIRequest(userQuery, limit = 10){
+//create the URL
+function createAPIURL(params){
+    const queryString = Object.keys(params).map(function(key){
+        const value = params[key]
+        return `${key}=${value}`
+    }).join("&")
+
+    const url = `${searchURL}?${queryString}&api_key=${apiKey}`
+    return url;
+}
+
+//makes the GET request based on getParkInfo
+function makeAPIRequest(searchText, searchNumber){
     const queryParams = {
-        stateCode: ,
-        limit: limit,
-        key: HrZMcBmPsvZDZygwNjJpwXjtlyeqdP7tbQrhotq8
+        stateCode: searchText,
+        limit: searchNumber
     }
 
-function makeStateArray() {
-    if 
+    const url = createAPIURL(queryParams)
+
+    fetch('https://cors-anywhere.herokuapp.com/'+url)
+        .then(function(response){
+            if (response.ok === true) {
+                return response.json()
+            }
+            throw new Error(response.statusText)
+        })
+        .then(function(responseJson){
+            displayResults(responseJson)
+        })
+        .catch(function(error){
+            console.log("hey something broke", error)
+        })
 }
-    
-function watchForm() {
-    $('form').submit(event => {
-      let stateIdForm = ($('#stateId').val()); 
-      let limitForm = ($('#resultsReturn').val());
-      event.preventDefault();
-      getNPSinfo(stateIdForm, limitForm);
-    });
-  }
+
+//handles the response info from the GET request
+function displayResults(responseResults) {
+    const items = responseResults.data
+    const itemHtml = items.map(function(item){
+        const parkName = (data.fullName)
+        const parkURL = (data.url)
+        const description = (data.description)
+
+        return createParkListHTML(parkName, parkURL, description)
+    }).join("")
+
+    $(".search-results").html(itemHtml)
+}
   
-$(function() {
-    console.log('App loaded! Waiting for submit!');
-    watchForm();
-  });
+//handles rendering to the DOM
+function createParkListHTML(parkName, parkURL, description) {
+    return `
+        <div class="searchResultsFound">
+            <h2 class="parkName">${parkName}</h2>
+            <p class="parkURL">${parkURL}</p>
+            <p clss="parkDescription">${description}</p>
+        </div>
+    `
+}
+function runTheThing() {
+    getParkInfo();
+}
+
+$(runTheThing);
