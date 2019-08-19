@@ -6,6 +6,7 @@ const apiKey = "HrZMcBmPsvZDZygwNjJpwXjtlyeqdP7tbQrhotq8"
 //listens for user input
 function getParkInfo(){
     $("#searchButton").on("click", function(){
+        event.preventDefault();
         const searchText = $("#stateId").val()
         const searchNumber = $('#resultsReturn').val()
         makeAPIRequest(searchText, searchNumber)
@@ -50,7 +51,7 @@ function makeAPIRequest(searchText, searchNumber){
 //handles the response info from the GET request
 function displayResults(responseResults) {
     const items = responseResults.data
-    const itemHtml = items.map(function(item){
+    const itemHtml = items.map(function(data){
         const parkName = (data.fullName)
         const parkURL = (data.url)
         const description = (data.description)
